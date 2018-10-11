@@ -216,7 +216,7 @@
                     android:layout_marginLeft="5dp"
                     android:layout_toRightOf="@id/weather_img"
                     android:singleLine="true"
-                    android:text="实时温度：5℃"
+                    android:text="实时：5℃"
                     android:textColor="@android:color/white"
                     android:textSize="20.0sp" />
                 <!-- 天气状况-->
