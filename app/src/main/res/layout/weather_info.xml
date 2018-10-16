@@ -171,7 +171,7 @@
             <!--今日天气信息块-->
             <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="150dp"
+                android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_below="@id/humidity"
                 android:layout_centerInParent="true"
@@ -179,8 +179,8 @@
                 <!-- 天气情况图片示例-->
                 <ImageView
                     android:id="@+id/weather_img"
-                    android:layout_width="150dp"
-                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:src="@drawable/biz_plugin_weather_qing" />
                 <!-- 今日星期-->
