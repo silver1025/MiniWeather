@@ -65,10 +65,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        if(view.getId()==R.id.title_city_manager){
-            Intent i=new Intent(this,SelectCity.class);
-//            startActivity(i);
-            startActivityForResult(i,1);
+        if (view.getId() == R.id.title_city_manager) {
+            Intent i = new Intent(this, SelectCity.class);
+//          startActivity(i);
+            startActivityForResult(i, 1);
         }
         if (view.getId() == R.id.title_update_btn) {
             SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
@@ -88,8 +88,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == RESULT_OK) {
-            String newCityCode= data.getStringExtra("cityCode");
-            Log.d("myWeather", "选择的城市代码为"+newCityCode);
+            String newCityCode = data.getStringExtra("cityCode");
+            Log.d("myWeather", "选择的城市代码为" + newCityCode);
             if (NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE) {
                 Log.d("myWeather", "网络OK");
                 queryWeatherCode(newCityCode);
@@ -290,94 +290,99 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         climateTv.setText(todayWeather.getType());
         windTv.setText("风力:" + todayWeather.getFengli());
 
-        int pmImgType = (Integer.parseInt(todayWeather.getPm25()) - 1) / 50;
-        pmImgType = pmImgType > 0 ? pmImgType : 0;
-        switch (pmImgType) {
-            case 0:
-                pmImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_0_50));
-                break;
-            case 1:
-                pmImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_51_100));
-                break;
-            case 2:
-                pmImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_101_150));
-                break;
-            case 3:
-                pmImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_151_200));
-                break;
-            case 4:
-            case 5:
-                pmImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_201_300));
-                break;
-            default:
-                pmImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_greater_300));
-                break;
+        if (!todayWeather.getPm25().equals("N/A")) {
+            int pmImgType = (Integer.parseInt(todayWeather.getPm25()) - 1) / 50;
+            pmImgType = pmImgType > 0 ? pmImgType : 0;
+            switch (pmImgType) {
+                case 0:
+                    pmImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_0_50));
+                    break;
+                case 1:
+                    pmImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_51_100));
+                    break;
+                case 2:
+                    pmImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_101_150));
+                    break;
+                case 3:
+                    pmImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_151_200));
+                    break;
+                case 4:
+                case 5:
+                    pmImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_201_300));
+                    break;
+                default:
+                    pmImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_greater_300));
+                    break;
+            }
         }
-        String weatherImgType = todayWeather.getType();
-        switch (weatherImgType) {
-            case "晴":
-                weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_qing));
-                break;
-            case "暴雪":
-                weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_baoxue));
-                break;
-            case "暴雨":
-                weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_baoyu));
-                break;
-            case "大暴雨":
-                weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_dabaoyu));
-                break;
-            case "大雪":
-                weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_daxue));
-                break;
-            case "大雨":
-                weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_dayu));
-                break;
-            case "多云":
-                weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_duoyun));
-                break;
-            case "雷阵雨":
-                weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_leizhenyu));
-                break;
-            case "雷阵雨冰雹":
-                weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_leizhenyubingbao));
-                break;
-            case "沙尘暴":
-                weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_shachenbao));
-                break;
-            case "特大暴雨":
-                weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_tedabaoyu));
-                break;
-            case "雾":
-                weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_wu));
-                break;
-            case "小雪":
-                weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_xiaoxue));
-                break;
-            case "小雨":
-                weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_xiaoyu));
-                break;
-            case "阴":
-                weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_yin));
-                break;
-            case "雨夹雪":
-                weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_yujiaxue));
-                break;
-            case "阵雪":
-                weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_zhenxue));
-                break;
-            case "阵雨":
-                weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_zhenyu));
-                break;
-            case "中雪":
-                weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_zhongxue));
-                break;
-            case "中雨":
-                weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_zhongyu));
-                break;
-            default:
-                weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_qing));
-                break;
+
+        if (!todayWeather.getType().equals("N/A")) {
+            String weatherImgType = todayWeather.getType();
+            switch (weatherImgType) {
+                case "晴":
+                    weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_qing));
+                    break;
+                case "暴雪":
+                    weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_baoxue));
+                    break;
+                case "暴雨":
+                    weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_baoyu));
+                    break;
+                case "大暴雨":
+                    weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_dabaoyu));
+                    break;
+                case "大雪":
+                    weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_daxue));
+                    break;
+                case "大雨":
+                    weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_dayu));
+                    break;
+                case "多云":
+                    weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_duoyun));
+                    break;
+                case "雷阵雨":
+                    weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_leizhenyu));
+                    break;
+                case "雷阵雨冰雹":
+                    weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_leizhenyubingbao));
+                    break;
+                case "沙尘暴":
+                    weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_shachenbao));
+                    break;
+                case "特大暴雨":
+                    weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_tedabaoyu));
+                    break;
+                case "雾":
+                    weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_wu));
+                    break;
+                case "小雪":
+                    weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_xiaoxue));
+                    break;
+                case "小雨":
+                    weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_xiaoyu));
+                    break;
+                case "阴":
+                    weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_yin));
+                    break;
+                case "雨夹雪":
+                    weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_yujiaxue));
+                    break;
+                case "阵雪":
+                    weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_zhenxue));
+                    break;
+                case "阵雨":
+                    weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_zhenyu));
+                    break;
+                case "中雪":
+                    weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_zhongxue));
+                    break;
+                case "中雨":
+                    weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_zhongyu));
+                    break;
+                default:
+                    weatherImg.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.biz_plugin_weather_qing));
+                    break;
+            }
         }
         Toast.makeText(MainActivity.this, "更新成功！", Toast.LENGTH_SHORT).show();
     }
