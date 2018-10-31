@@ -24,7 +24,7 @@ public class SelectCity extends AppCompatActivity implements View.OnClickListene
     private ArrayList<City> mCityList;
     private ArrayList<String> mCityNameList = new ArrayList<String>();
     private String selectedCity;
-    private String selectedCityCode = "101160101";
+    private String selectedCityCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +33,7 @@ public class SelectCity extends AppCompatActivity implements View.OnClickListene
         mBackBtn = (ImageView) findViewById(R.id.title_back);
         mBackBtn.setOnClickListener(this);
         mCityList = MyApplication.getInstance().getCityList();
-
+        selectedCityCode = MyApplication.getInstance().getString("cityCode","");
         initViews();
     }
 

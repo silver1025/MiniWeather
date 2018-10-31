@@ -1,6 +1,7 @@
 package cn.edu.pku.quqian.app;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.os.Environment;
 import android.util.Log;
 
@@ -17,6 +18,7 @@ import cn.edu.pku.quqian.db.CityDB;
 public class MyApplication extends Application {
     private static final String TAG = "MyAPP";
     private static MyApplication mApplication;
+    private SharedPreferences sharedPreferences;
     private CityDB mCityDB;
     private ArrayList<City> mCityList;
 
@@ -26,6 +28,7 @@ public class MyApplication extends Application {
         Log.d(TAG, "MyApplication->Oncreate");
         mApplication = this;
         mCityDB = openCityDB();
+        sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
         initCityList();
     }
 
@@ -59,6 +62,18 @@ public class MyApplication extends Application {
 
     public static MyApplication getInstance() {
         return mApplication;
+    }
+
+    public String getString(String name,String defaultValue){
+        return mApplication.sharedPreferences.getString(name,defaultValue);
+    }
+
+    public boolean putString(String name,String value){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(name,value);
+        editor.commit();
+        return true;
+
     }
 
     private CityDB openCityDB() {

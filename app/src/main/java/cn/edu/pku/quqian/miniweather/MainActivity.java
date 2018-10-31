@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,17 +28,16 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import cn.edu.pku.quqian.app.MyApplication;
 import cn.edu.pku.quqian.bean.TodayWeather;
 import cn.edu.pku.quqian.util.NetUtil;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int UPDATE_TODAY_WEATHER = 1;
-    private ImageView mUpdateBtn;
-    private ImageView mCitySelect;
+    private ImageView mUpdateBtn, mCitySelect, weatherImg, pmImg;
     private TextView cityTv, timeTv, humidityTv, weekTv, pmDataTv, pmQualityTv,
             temperatureTv, climateTv, windTv, city_name_Tv, now_temperature_Tv;
-    private ImageView weatherImg, pmImg;
-
+    private ProgressBar updateProgress;
     private Handler mHandler = new Handler() {
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
@@ -57,9 +57,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mUpdateBtn = (ImageView) findViewById(R.id.title_update_btn);
         mUpdateBtn.setOnClickListener(this);
-
         mCitySelect = (ImageView) findViewById(R.id.title_city_manager);
         mCitySelect.setOnClickListener(this);
+        updateProgress = (ProgressBar) findViewById(R.id.title_update_progress);
         initView();
     }
 
@@ -71,10 +71,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivityForResult(i, 1);
         }
         if (view.getId() == R.id.title_update_btn) {
-            SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
-            String cityCode = sharedPreferences.getString("main_city_code", "101010100");
+            String cityCode = MyApplication.getInstance().getString("cityCode", "101010100");
             Log.d("myWeather", cityCode);
-
             if (NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE) {
                 Log.d("myWeather", "网络OK");
                 queryWeatherCode(cityCode);
@@ -88,7 +86,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == RESULT_OK) {
-            String newCityCode = data.getStringExtra("cityCode");
+            String newCityCode;
+            if (data.getStringExtra("cityCode").equals("")) {
+                newCityCode = MyApplication.getInstance().getString("cityCode", "101010100");
+            } else {
+                newCityCode = data.getStringExtra("cityCode");
+            }
+            MyApplication.getInstance().putString("cityCode", newCityCode);
             Log.d("myWeather", "选择的城市代码为" + newCityCode);
             if (NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE) {
                 Log.d("myWeather", "网络OK");
@@ -102,6 +106,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void queryWeatherCode(String cityCode) {
+        updateProgress.setVisibility(View.VISIBLE);
+        mUpdateBtn.setVisibility(View.GONE);
         final String address = "http://wthrcdn.etouch.cn/WeatherApi?citykey=" + cityCode;
         Log.d("myWeather", address);
         new Thread(new Runnable() {
@@ -144,6 +150,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         }).start();
+        mUpdateBtn.setVisibility(View.VISIBLE);
+        updateProgress.setVisibility(View.GONE);
     }
 
     private TodayWeather parseXML(String xmldata) {
