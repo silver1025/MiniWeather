@@ -3,6 +3,7 @@ package cn.edu.pku.quqian.bean;
 public class City {
     private String province;
     private String city;
+    //cityCode
     private String number;
     private String firstPY;
     private String allPY;
