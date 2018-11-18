@@ -1,22 +1,34 @@
 package cn.edu.pku.quqian.bean;
 
+//天气类
 public class TodayWeather {
+    //城市名
     private String city = "N/A";
+    //更新时间
     private String updatetime = "N/A";
+    //实时温度
     private String wendu = "N/A";
+    //湿度
     private String shidu = "N/A";
     private String pm25 = "N/A";
+    //空气质量
     private String quality = "N/A";
     private String fengxiang = "N/A";
     private String fengli = "N/A";
+    //日期与星期
     private String date = "N/A";
+    //当日最高、最低温度
     private String high = "N/A";
     private String low = "N/A";
+    //天气类型
     private String type = "N/A";
+    //日期与星期
     private String week_day1;
     private String low_day1;
     private String high_day1;
+    //天气类型
     private String climate_day1;
+    //风力
     private String wind_day1;
     private String week_day2;
     private String low_day2;

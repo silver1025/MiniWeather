@@ -1,12 +1,18 @@
 package cn.edu.pku.quqian.bean;
 
+//城市类
 public class City {
+    //省份
     private String province;
+    //城市名
     private String city;
     //cityCode
     private String number;
+    //城市名第一个字拼音的首字母
     private String firstPY;
+    //城市名的拼音
     private String allPY;
+    //城市名所有字拼音的首字母
     private String allFristPY;
     public City(String province, String city, String number, String
             firstPY, String allPY, String allFristPY) {

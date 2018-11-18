@@ -23,12 +23,19 @@ import cn.edu.pku.quqian.bean.City;
 import cn.edu.pku.quqian.app.MyApplication;
 
 public class SelectCity extends AppCompatActivity implements View.OnClickListener {
+    //返回
     private ImageView mBackBtn;
+    //城市列表
     private ListView mListView;
+    //查询输入框
     private EditText mEditText;
+    //顶栏城市名
     private TextView title_name_Tv;
+    //城市列表
     private ArrayList<City> mCityList = new ArrayList<>();
+    //城市名
     private ArrayList<String> mCityNameList = new ArrayList<>();
+    //选择的城市名与cityCode
     private String selectedCity;
     private String selectedCityCode;
     private ArrayAdapter<String> adapter;
@@ -37,20 +44,26 @@ public class SelectCity extends AppCompatActivity implements View.OnClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.select_city);
+        //控件一一对应
         mBackBtn = (ImageView) findViewById(R.id.title_back);
         mListView = (ListView) findViewById(R.id.list_view);
         title_name_Tv = (TextView) findViewById(R.id.title_name);
         mEditText = (EditText)findViewById(R.id.search_edit);
+        //返回键的监听器
         mBackBtn.setOnClickListener(this);
+        //用已保存的CityCode初始化
         selectedCityCode = MyApplication.getInstance().getString("cityCode","");
 
+        //用数据库中的信息初始化城市名以及城市列表
         for (City city : MyApplication.getInstance().getCityList()) {
             mCityNameList.add(city.getCity());
             mCityList.add(city);
         }
+        //ListView的适配器
         adapter = new ArrayAdapter<String>(
                 SelectCity.this, android.R.layout.simple_list_item_1, mCityNameList);
         mListView.setAdapter(adapter);
+        //ListView单击选项时
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -61,29 +74,35 @@ public class SelectCity extends AppCompatActivity implements View.OnClickListene
                 title_name_Tv.setText("当前城市：" + selectedCity);
             }
         });
-
+        //输入框实时监控
         TextWatcher mTextWatcher = new TextWatcher() {
             private CharSequence temp;
             private int editStart ;
             private int editEnd ;
             @Override
+            //改变前
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
                 temp = charSequence;
                 Log.d("myapp","beforeTextChanged:"+temp) ;
             }
             @Override
+            //改变时
             public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+                //更改所要展示的列表信息
                 filterData(charSequence.toString());
+                //更新ListView适配器
                 adapter.notifyDataSetChanged();
                 Log.d("myapp","onTextChanged:"+charSequence) ;
             }
             @Override
+            //改变后
             public void afterTextChanged(Editable editable) {
                 editStart = mEditText.getSelectionStart();
                 editEnd = mEditText.getSelectionEnd();
+                //如果输入字数超过限制，提示
                 if (temp.length() > 10) {
                     Toast.makeText(SelectCity.this,
-                            "你输⼊入的字数已经超过了限制！", Toast.LENGTH_SHORT)
+                            "你输⼊的字数已经超过了限制！", Toast.LENGTH_SHORT)
                             .show();
                     editable.delete(editStart-1, editEnd);
                     int tempSelection = editStart;
@@ -96,16 +115,20 @@ public class SelectCity extends AppCompatActivity implements View.OnClickListene
         mEditText.addTextChangedListener(mTextWatcher);
     }
 
+    //更改所要展示的列表信息
     private void filterData(String filterStr){
+        //清空两个list
         mCityList.clear();
         mCityNameList.clear();
         if(filterStr.isEmpty()){
+            //如果没有查询关键字，list与之前一样
             for (City city : MyApplication.getInstance().getCityList()) {
                 mCityNameList.add(city.getCity());
                 mCityList.add(city);
             }
             Log.d("myapp","kong") ;
         }else {
+            //如果有关键字，根据关键字筛选，并将相关信息更新到两个list中
             for (City city :MyApplication.getInstance().getCityList()) {
                 if(city.getCity().indexOf(filterStr.toString())!=-1){
                     mCityNameList.add(city.getCity());
@@ -117,9 +140,12 @@ public class SelectCity extends AppCompatActivity implements View.OnClickListene
     }
 
     @Override
+    //单击事件
     public void onClick(View v) {
         switch (v.getId()) {
+            //单击返回
             case R.id.title_back:
+                //返回数据
                 Intent i = new Intent();
                 i.putExtra("cityCode", selectedCityCode);
                 setResult(RESULT_OK, i);

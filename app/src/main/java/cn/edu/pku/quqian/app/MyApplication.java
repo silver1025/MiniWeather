@@ -17,6 +17,7 @@ import cn.edu.pku.quqian.db.CityDB;
 
 public class MyApplication extends Application {
     private static final String TAG = "MyAPP";
+    //静态实例化
     private static MyApplication mApplication;
     private SharedPreferences sharedPreferences;
     private CityDB mCityDB;
@@ -27,13 +28,17 @@ public class MyApplication extends Application {
         super.onCreate();
         Log.d(TAG, "MyApplication->Oncreate");
         mApplication = this;
+        //打开数据库
         mCityDB = openCityDB();
+        //获取SharedPreferences对象
         sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
+        //初始化城市列表
         initCityList();
     }
 
     private void initCityList() {
         mCityList = new ArrayList<City>();
+        //启动新线程去准备城市列表
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -43,9 +48,12 @@ public class MyApplication extends Application {
         }).start();
     }
 
+    //准备城市列表
     private boolean prepareCityList() {
+        //获取城市信息列表
         mCityList = mCityDB.getAllCity();
         int i = 0;
+        //打印所有cityCode以及城市名
         for (City city : mCityList) {
             i++;
             String cityName = city.getCity();
@@ -56,27 +64,33 @@ public class MyApplication extends Application {
         return true;
     }
 
+    //获取城市列表
     public ArrayList<City> getCityList() {
         return mCityList;
     }
 
+    //获取MyApplication实例
     public static MyApplication getInstance() {
         return mApplication;
     }
 
-    public String getString(String name,String defaultValue){
-        return mApplication.sharedPreferences.getString(name,defaultValue);
+    //获取sharedPreferences中存储的信息
+    public String getString(String name, String defaultValue) {
+        return mApplication.sharedPreferences.getString(name, defaultValue);
     }
 
-    public boolean putString(String name,String value){
+    //更新sharedPreferences中的信息
+    public boolean putString(String name, String value) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(name,value);
+        editor.putString(name, value);
         editor.commit();
         return true;
 
     }
 
+    //打开数据库
     private CityDB openCityDB() {
+        //拼接数据库路径
         String path = "/data"
                 + Environment.getDataDirectory().getAbsolutePath()
                 + File.separator + getPackageName()

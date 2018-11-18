@@ -15,6 +15,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -27,18 +30,20 @@ import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cn.edu.pku.quqian.app.MyApplication;
+import cn.edu.pku.quqian.bean.City;
 import cn.edu.pku.quqian.bean.TodayWeather;
 import cn.edu.pku.quqian.bean.ViewPagerAdapter;
+import cn.edu.pku.quqian.util.MyLocationListener;
 import cn.edu.pku.quqian.util.NetUtil;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, ViewPager.OnPageChangeListener {
     private static final int UPDATE_TODAY_WEATHER = 1;
-    private ImageView mUpdateBtn, mCitySelect, weatherImg, pmImg;
+    //今日天气信息
+    private ImageView mUpdateBtn, mCitySelect, mLocation, weatherImg, pmImg;
     private TextView cityTv, timeTv, humidityTv, weekTv, pmDataTv, pmQualityTv,
             temperatureTv, climateTv, windTv, city_name_Tv, now_temperature_Tv;
     private ProgressBar updateProgress;
@@ -57,6 +62,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //小圆点
     private ImageView[] dots;
     private int[] ids = {R.id.iv1, R.id.iv2};
+    //定位
+    //声明LocationClient类，声明为静态是为了定位成功后停止
+    public static LocationClient mLocationClient = null;
+    private MyLocationListener myListener = new MyLocationListener();
+
 
     //主线程中增加handler，处理子线程传回的天气信息
     private Handler mHandler = new Handler() {
@@ -82,12 +92,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mCitySelect = (ImageView) findViewById(R.id.title_city_manager);
         mCitySelect.setOnClickListener(this);
         updateProgress = (ProgressBar) findViewById(R.id.title_update_progress);
+        mLocation = findViewById(R.id.title_location);
+        mLocation.setOnClickListener(this);
         //初始化两个滑动页面
         initViews();
         //初始化小圆点
         initDots();
         //初始化视图
         initView();
+        //定位
+        initLocation();
+    }
+
+    private void initLocation() {
+        mLocationClient = new LocationClient(getApplicationContext());
+        mLocationClient.registerLocationListener(myListener);
+        //注册监听函数
+
+        LocationClientOption option = new LocationClientOption();
+
+        option.setIsNeedAddress(true);
+        //可选，是否需要地址信息，默认为不需要，即参数为false
+        //如果开发者需要获得当前点的地址信息，此处必须为true
+
+        option.setScanSpan(1000);
+        //可选，设置发起定位请求的间隔，int类型，单位ms
+        //如果设置为0，则代表单次定位，即仅定位一次，默认为0
+        //如果设置非0，需设置1000ms以上才有效
+
+        option.setOpenGps(true);
+        //可选，设置是否使用gps，默认false
+        //使用高精度和仅用设备两种定位模式的，参数必须设置为true
+
+        mLocationClient.setLocOption(option);
+        //mLocationClient为第二步初始化过的LocationClient对象
+        //需将配置好的LocationClientOption对象，通过setLocOption方法传递给LocationClient对象使用
+        //更多LocationClientOption的配置，请参照类参考中LocationClientOption类的详细说明
+
+        mLocationClient.start();
+        //mLocationClient为第二步初始化过的LocationClient对象
+        //调用LocationClient的start()方法，便可发起定位请求
     }
 
     @Override
@@ -114,6 +158,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //如果网络异常，弹出文字提示
                 Log.d("myWeather", "网络挂了");
                 Toast.makeText(MainActivity.this, "网络挂了！", Toast.LENGTH_LONG).show();
+            }
+        }
+        //点击定位
+        if (view.getId() == R.id.title_location) {
+            //获取sharedPreferences中的cityCode
+            String cityCode = MyApplication.getInstance().getString("cityCode", "101010100");
+            //获取定位到的城市
+            String cityName = myListener.getCity();
+            if (cityName.equals("")) {
+                //如果定位不成功
+                Log.d("myWeather", "定位失败");
+                Toast.makeText(MainActivity.this, "定位失败", Toast.LENGTH_LONG).show();
+            } else {
+                //如果定位成功
+                //去掉多余的字
+                cityName = cityName.replaceAll("市", "");
+                for (City city : MyApplication.getInstance().getCityList()) {
+                    //查询城市名，遍历
+                    if (city.getCity().equals(cityName)) {
+                        cityCode = city.getNumber();
+                        Log.d("myWeather", "cityCode：" + cityName);
+                        break;
+                    }
+                }
+                Log.d("myWeather", "城市为：" + cityName);
+                //更新sharedPreferences中的cityCode
+                MyApplication.getInstance().putString("cityCode", cityCode);
+                queryWeatherCode(cityCode);
             }
         }
     }
@@ -652,6 +724,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Toast.makeText(MainActivity.this, "更新成功！", Toast.LENGTH_SHORT).show();
     }
 
+    //更新相应的天气图片的函数
     private void changeWeatherImg(String weatherImgType, ImageView weatherImg) {
         switch (weatherImgType) {
             case "晴":
