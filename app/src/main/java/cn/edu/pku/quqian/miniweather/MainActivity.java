@@ -137,13 +137,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     //点击后的响应事件
     public void onClick(View view) {
-        //点击选择城市button
+
+        //点击选择城市
         if (view.getId() == R.id.title_city_manager) {
             //启动选择城市Activity，并接收返回的数据
             Intent i = new Intent(this, SelectCity.class);
             startActivityForResult(i, 1);
         }
-        //点击更新button
+
+        //点击更新
         if (view.getId() == R.id.title_update_btn) {
             //获取sharedPreferences中的cityCode
             String cityCode = MyApplication.getInstance().getString("cityCode", "101010100");
@@ -153,20 +155,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d("myWeather", "网络OK");
                 //查询并更新天气信息
                 queryWeatherCode(cityCode);
-//              Toast.makeText(MainActivity.this,"网络OK！", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this,"网络OK！", Toast.LENGTH_LONG).show();
             } else {
                 //如果网络异常，弹出文字提示
                 Log.d("myWeather", "网络挂了");
                 Toast.makeText(MainActivity.this, "网络挂了！", Toast.LENGTH_LONG).show();
             }
         }
+
         //点击定位
         if (view.getId() == R.id.title_location) {
             //获取sharedPreferences中的cityCode
             String cityCode = MyApplication.getInstance().getString("cityCode", "101010100");
             //获取定位到的城市
             String cityName = myListener.getCity();
-            if (cityName.equals("")) {
+            if (cityName==null||cityName.isEmpty()) {
                 //如果定位不成功
                 Log.d("myWeather", "定位失败");
                 Toast.makeText(MainActivity.this, "定位失败", Toast.LENGTH_LONG).show();
@@ -174,17 +177,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //如果定位成功
                 //去掉多余的字
                 cityName = cityName.replaceAll("市", "");
+                Log.d("myWeather", "城市为：" + cityName);
                 for (City city : MyApplication.getInstance().getCityList()) {
                     //查询城市名，遍历
                     if (city.getCity().equals(cityName)) {
                         cityCode = city.getNumber();
-                        Log.d("myWeather", "cityCode：" + cityName);
+                        //更新sharedPreferences中的cityCode
+                        MyApplication.getInstance().putString("cityCode", cityCode);
+                        Log.d("myWeather", "cityCode：" + cityCode);
                         break;
                     }
                 }
-                Log.d("myWeather", "城市为：" + cityName);
-                //更新sharedPreferences中的cityCode
-                MyApplication.getInstance().putString("cityCode", cityCode);
+                //查询并更新天气信息
                 queryWeatherCode(cityCode);
             }
         }

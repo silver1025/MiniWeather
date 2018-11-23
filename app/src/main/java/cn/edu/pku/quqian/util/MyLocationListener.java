@@ -8,12 +8,7 @@ import com.baidu.location.BDLocationListener;
 import cn.edu.pku.quqian.miniweather.MainActivity;
 
 public class MyLocationListener implements BDLocationListener {
-    String cityCode;
     String city = null;
-
-    public String getCityCode() {
-        return cityCode;
-    }
 
     public String getCity() {
         return city;
@@ -25,8 +20,6 @@ public class MyLocationListener implements BDLocationListener {
         //以下只列举部分获取地址相关的结果信息
         //更多结果信息获取说明，请参照类参考中BDLocation类中的说明
 
-        cityCode = location.getCityCode();
-        Log.d("myWeather", "城市代码为：" + cityCode);
         String addr = location.getAddrStr();    //获取详细地址信息
         Log.d("myWeather", "获取详细地址信息：" + addr);
         String country = location.getCountry();    //获取国家
@@ -40,7 +33,7 @@ public class MyLocationListener implements BDLocationListener {
         String street = location.getStreet();    //获取街道信息
         Log.d("myWeather", "获取街道信息：" + street);
         //定位成功后便停止
-        if(!city.equals("")) {
+        if(!city.isEmpty()) {
             MainActivity.mLocationClient.stop();
         }
     }
